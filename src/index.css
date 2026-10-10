@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+:root {
+  --xiketic: #101126;
+  --space-cadet: #131637;
+  --deep-space-cadet: #1F244C;
+  --purple-navy: #3D4069;
+  --dark-blue-gray: #5E5F8F;
+
+  --primary-text: #F5F5FA;
+  --secondary-text: #B8B9CC;
+  --muted-text: #8587A3;
+
+  --border: #35385F;
+  --border-light: #454873;
+
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--xiketic);
+  color: var(--primary-text);
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+.font-mono-tech {
+  font-family: var(--font-mono);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #101126;
+}
+::-webkit-scrollbar-thumb {
+  background: #35385F;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #5E5F8F;
+}
+
+/* Deep Space Custom Cards & Components */
+.space-card {
+  background: rgba(19, 22, 55, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid #35385F;
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.space-card-hover:hover {
+  border-color: #5E5F8F;
+  background: rgba(31, 36, 76, 0.85);
+  box-shadow: 0 12px 32px -8px rgba(94, 95, 143, 0.25);
+  transform: translateY(-4px);
+}
+
+.space-card-accent {
+  background: rgba(31, 36, 76, 0.6);
+  border: 1px solid #454873;
+}
+
+/* Subtle Lavender Lighting */
+.space-glow {
+  box-shadow: 0 0 40px -10px rgba(94, 95, 143, 0.3);
+}
+
+.text-highlight {
+  color: #5E5F8F;
+}
+
+.text-muted-custom {
+  color: #8587A3;
+}
+
+.text-secondary-custom {
+  color: #B8B9CC;
+}
+
+/* Deep Space Starfield Animation */
+.starfield-bg {
+  background-image: 
+    radial-gradient(1px 1px at 20px 30px, rgba(245, 245, 250, 0.7), rgba(0,0,0,0)),
+    radial-gradient(1.5px 1.5px at 40px 70px, rgba(184, 185, 204, 0.8), rgba(0,0,0,0)),
+    radial-gradient(1px 1px at 90px 40px, rgba(245, 245, 250, 0.6), rgba(0,0,0,0)),
+    radial-gradient(1.5px 1.5px at 160px 120px, rgba(94, 95, 143, 0.7), rgba(0,0,0,0)),
+    radial-gradient(1px 1px at 230px 190px, rgba(245, 245, 250, 0.5), rgba(0,0,0,0));
+  background-repeat: repeat;
+  background-size: 300px 300px;
+  animation: starfieldMove 120s linear infinite;
+}
+
+@keyframes starfieldMove {
+  from { background-position: 0 0; }
+  to { background-position: 1000px 1000px; }
+}

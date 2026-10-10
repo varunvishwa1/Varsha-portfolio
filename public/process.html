@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Video Processor</title>
+</head>
+<body style="background: #101126; color: white;">
+  <h1>Processing Video...</h1>
+  <div id="status">Loading...</div>
+  <video id="vid" src="/assets/Varsha-video.mp4" crossorigin="anonymous" muted playsinline style="display:none;"></video>
+  <canvas id="c"></canvas>
+
+  <script>
+    const vid = document.getElementById('vid');
+    const c = document.getElementById('c');
+    const status = document.getElementById('status');
+    const ctx = c.getContext('2d', { willReadFrequently: true });
+    
+    let mediaRecorder;
+    let recordedChunks = [];
+    
+    vid.addEventListener('loadedmetadata', () => {
+      c.width = vid.videoWidth;
+      c.height = vid.videoHeight;
+      
+      const stream = c.captureStream(30); // 30 fps
+      // Try to use a codec that supports alpha
+      let options = { mimeType: 'video/webm;codecs=vp8' };
+      if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
+        options = { mimeType: 'video/webm;codecs=vp9' };
+      }
+      
+      mediaRecorder = new MediaRecorder(stream, options);
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedChunks.push(e.data);
+      };
+      
+      mediaRecorder.onstop = () => {
+        // Download webm
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'varsha-video-transparent.webm';
+        a.click();
+        
+        // Download PNG
+        const pngUrl = c.toDataURL('image/png');
+        const a2 = document.createElement('a');
+        a2.href = pngUrl;
+        a2.download = 'varsha-avatar.png';
+        a2.click();
+        
+        status.innerText = 'DONE';
+      };
+      
+      mediaRecorder.start();
+      vid.play();
+      status.innerText = 'Recording...';
+      processFrame();
+    });
+
+    function processFrame() {
+      if (vid.paused || vid.ended) {
+        if (mediaRecorder.state !== 'inactive') {
+          mediaRecorder.stop();
+        }
+        return;
+      }
+      
+      ctx.drawImage(vid, 0, 0, c.width, c.height);
+      const frame = ctx.getImageData(0, 0, c.width, c.height);
+      const data = frame.data;
+      
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i+1];
+        const b = data[i+2];
+        
+        const maxRB = Math.max(r, b);
+        const greenDiff = g - maxRB;
+        
+        // Target the actual green-screen color using its hue, saturation
+        // A pure green screen will have a high greenDiff
+        if (greenDiff > 10) {
+            let alpha = 1.0;
+            // Soft alpha matte
+            if (greenDiff > 35) {
+                alpha = 0;
+            } else {
+                alpha = 1 - ((greenDiff - 10) / 25);
+            }
+            data[i+3] = Math.floor(data[i+3] * alpha);
+            
+            // Spill suppression
+            if (alpha > 0) {
+                data[i+1] = Math.min(g, maxRB + (g - maxRB)*0.3);
+            }
+        } else if (g > maxRB) {
+            // Mild despill for pixels not transparent but slightly green
+            data[i+1] = Math.min(g, maxRB + (g - maxRB)*0.5);
+        }
+      }
+      
+      ctx.putImageData(frame, 0, 0);
+      requestAnimationFrame(processFrame);
+    }
+  </script>
+</body>
+</html>
